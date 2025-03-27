@@ -1,0 +1,27 @@
+# Python编译文件
+__pycache__/
+*.py[cod]
+*$py.class
+
+# 日志文件
+*.log
+
+# 虚拟环境
+venv/
+env/
+ENV/
+
+# IDE文件
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Windows特定文件
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# 个人配置文件
+config.ini
+settings.json
