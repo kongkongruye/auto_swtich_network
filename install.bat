@@ -1,12 +1,12 @@
 @echo off
-setlocal enabledelayedexpansion
+rem 关闭命令回显
 
 echo ===================================================
 echo        网络自动切换工具安装程序
 echo ===================================================
 echo.
 
-:: 检查管理员权限
+rem 检查管理员权限
 net session >nul 2>&1
 if %errorlevel% neq 0 (
     echo 需要管理员权限来安装此工具。
@@ -15,12 +15,12 @@ if %errorlevel% neq 0 (
     exit /b 1
 )
 
-:: 设置变量
-set "SCRIPT_DIR=%~dp0"
-set "INSTALL_DIR=%USERPROFILE%\NetworkMonitor"
-set "STARTUP_DIR=%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup"
-set "PYTHON_SCRIPT=network_monitor.py"
-set "STARTUP_SCRIPT=start_network_monitor.bat"
+rem 设置变量
+set SCRIPT_DIR=%~dp0
+set INSTALL_DIR=%USERPROFILE%\NetworkMonitor
+set STARTUP_DIR=%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup
+set PYTHON_SCRIPT=network_monitor.py
+set STARTUP_SCRIPT=start_network_monitor.bat
 
 echo 正在检查Python安装...
 where python >nul 2>&1
@@ -31,15 +31,15 @@ if %errorlevel% neq 0 (
     exit /b 1
 )
 
-:: 检查Python版本
-for /f "tokens=2" %%V in ('python --version 2^>^&1') do set "PYTHON_VERSION=%%V"
+rem 检查Python版本
+for /f "tokens=2" %%V in ('python --version 2^>^&1') do set PYTHON_VERSION=%%V
 echo 检测到Python版本: %PYTHON_VERSION%
 
-:: 创建安装目录
+rem 创建安装目录
 echo 正在创建安装目录...
 if not exist "%INSTALL_DIR%" mkdir "%INSTALL_DIR%"
 
-:: 复制文件
+rem 复制文件
 echo 正在复制文件...
 copy "%SCRIPT_DIR%%PYTHON_SCRIPT%" "%INSTALL_DIR%\%PYTHON_SCRIPT%" >nul
 if %errorlevel% neq 0 (
@@ -48,15 +48,13 @@ if %errorlevel% neq 0 (
     exit /b 1
 )
 
-:: 创建启动脚本
+rem 创建启动脚本
 echo 正在创建启动脚本...
-(
-    echo @echo off
-    echo :: 网络自动切换工具启动脚本
-    echo powershell -Command "Start-Process python -ArgumentList '%INSTALL_DIR%\%PYTHON_SCRIPT%' -Verb RunAs"
-) > "%INSTALL_DIR%\%STARTUP_SCRIPT%"
+echo @echo off > "%INSTALL_DIR%\%STARTUP_SCRIPT%"
+echo rem 网络自动切换工具启动脚本 >> "%INSTALL_DIR%\%STARTUP_SCRIPT%"
+echo powershell -Command "Start-Process python -ArgumentList '%INSTALL_DIR%\%PYTHON_SCRIPT%' -Verb RunAs" >> "%INSTALL_DIR%\%STARTUP_SCRIPT%"
 
-:: 复制启动脚本到启动文件夹
+rem 复制启动脚本到启动文件夹
 echo 正在设置开机自启动...
 copy "%INSTALL_DIR%\%STARTUP_SCRIPT%" "%STARTUP_DIR%\%STARTUP_SCRIPT%" >nul
 if %errorlevel% neq 0 (
@@ -65,9 +63,9 @@ if %errorlevel% neq 0 (
     exit /b 1
 )
 
-:: 安装必要的Python库
+rem 安装必要的Python库
 echo 正在安装必要的Python库...
-pip install win10toast >nul 2>&1
+python -m pip install win10toast >nul 2>&1
 if %errorlevel% neq 0 (
     echo 警告: win10toast库安装失败，通知功能可能受限。
 ) else (
@@ -87,7 +85,7 @@ echo 2. 手动运行: %INSTALL_DIR%\%STARTUP_SCRIPT%
 echo ===================================================
 echo.
 
-:: 询问是否立即启动
+rem 询问是否立即启动
 set /p START_NOW="是否立即启动网络监控? (Y/N): "
 if /i "%START_NOW%"=="Y" (
     echo 正在启动网络监控...
